@@ -10,12 +10,13 @@ from sklearn.model_selection import train_test_split
 Script that runs the simulations shown in Fig. 2c
 """
 
-VERSION = "TEST"
+K = 1
+VERSION = "K=%i" % K
 
 # sample fitness function:
 L = 8
 q = 2
-K = 2
+# K = 2
 V = 'random'
 N = q**L
 f, beta, phi, seqs = sparsity_utils.sample_gnk_fitness_function(L, q, K=K, V=V) 
@@ -43,8 +44,8 @@ results = {
     'test_spearman': [],
     'test_pearson': [],
     'test_mse': []
-    
 }
+
 
 def add_to_results(train_size, loss, sub_results):
     results['loss'].append(loss)
@@ -52,7 +53,7 @@ def add_to_results(train_size, loss, sub_results):
     results['test_spearman'].append("%.3f" % sub_results['test_spearman'])
     results['test_pearson'].append("%.3f" %sub_results['test_pearson'])
     results['test_mse'].append("%.3f" % sub_results['test_mse'])
-    
+
 
 mse_lr = 1e-3
 bt_lr = 1e-3
@@ -104,3 +105,5 @@ for i, n in enumerate(ns):
         add_to_results(n, 'bradley_terry', bt_results)
         df = pd.DataFrame(results)
         df.to_csv("../results/train_size_results/train_size_results_%s.csv" % VERSION)
+
+

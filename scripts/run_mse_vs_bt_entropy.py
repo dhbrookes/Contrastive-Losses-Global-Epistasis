@@ -12,12 +12,13 @@ from sklearn.model_selection import train_test_split
 Script that runs the simulations shown in Fig. 2b
 """
 
-VERSION = "TEST"  
+K = 1
+VERSION = "K=%i" % K 
 
 # parameters of simulation:
 L = 10
 q = 2
-K = 2
+# K = 1
 V = 'random'
 N = q**L
 num_train = 256
@@ -46,8 +47,8 @@ results = {
     'test_spearman': [],
     'test_pearson': [],
     'test_mse': []
-    
 }
+
 
 def add_to_results(nonlinearity, alpha, entropy, loss, sub_results):
     results['loss'].append(loss)
@@ -57,7 +58,7 @@ def add_to_results(nonlinearity, alpha, entropy, loss, sub_results):
     results['test_spearman'].append("%.3f" % sub_results['test_spearman'])
     results['test_pearson'].append("%.3f" %sub_results['test_pearson'])
     results['test_mse'].append("%.3f" % sub_results['test_mse'])
-    
+
 
 mse_lr = 1e-3
 bt_lr = 1e-3
@@ -114,3 +115,5 @@ for g_name in gs.keys():
             add_to_results(g_name, alpha, entropy, 'bradley_terry', bt_results)
             df = pd.DataFrame(results)
             df.to_csv("../results/entropy_results/entropy_results_%s.csv" % VERSION)
+
+
