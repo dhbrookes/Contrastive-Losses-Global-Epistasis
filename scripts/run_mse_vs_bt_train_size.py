@@ -10,11 +10,13 @@ from sklearn.model_selection import train_test_split
 Script that runs the simulations shown in Fig. 2c
 """
 
-K = 1
-VERSION = "K=%i" % K
+K = 2
+alpha = 10
+eps = 0.025
+VERSION = f"K={K}_alpha={alpha}_eps={eps}"
 
 # sample fitness function:
-L = 8
+L = 10
 q = 2
 # K = 2
 V = 'random'
@@ -26,17 +28,18 @@ f-=np.mean(f)
 beta[0] = 0 
 
 # apply nonlinearity and renormalize:
-g = simulation_utils.sigmoid
-alpha = 20
-sig = 0
+g = simulation_utils.exponential
+
 f_ = g(f, alpha=alpha) 
 beta_ = phi.T@f_
-fnorm_ = (f_ - np.mean(f_)) / np.std(f_) + sig*np.random.normal(size=N)
+fnorm_ = (f_ - np.mean(f_)) / np.std(f_)
+fnorm_ = fnorm_ + np.random.randn(N)*eps
 betanorm_ = phi.T@fnorm_
 
 
 ns = np.arange(25, 1025, 25)
-replicates = 200
+# replicates = 200
+replicates = 40
 
 results = {
     'train_size': [],
@@ -62,7 +65,7 @@ batch_size = 64
 max_epochs = 2500
 verbose = True
 sig = 0
-DEVICE = 'cpu'
+DEVICE = 'cuda:0'
 
 np.save(f"../results/train_size_results/train_size_f_{VERSION}.npy", f)
 np.save(f"../results/train_size_results/train_size_fprime_{VERSION}.npy", fnorm_)
@@ -71,6 +74,7 @@ for i, n in enumerate(ns):
     num_train = int(n*0.8)
     num_val = int(n*0.2)
     for j in range(replicates):
+        print(VERSION)
         train_idx, _ = train_test_split(list(range(N)), train_size=num_train+num_val) 
         train_idx, val_idx = train_test_split(train_idx, train_size=num_train)
         test_idx = list(range(N)) # Test on everything 

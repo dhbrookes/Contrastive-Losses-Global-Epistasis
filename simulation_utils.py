@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import numpy as np
 from scipy.stats import spearmanr, pearsonr
 from tqdm import tqdm
+from sklearn.preprocessing import QuantileTransformer
 
 
 class Net(nn.Module):
@@ -90,7 +91,8 @@ def fit_net(L, f, phi,
             max_epochs=1000, 
             patience=10,
             verbose=False,
-            device='cpu'
+            device='cpu',
+            quantile_transform=None
             ):
     """
     Fit neural network with Adam and early stopping. Returns results
@@ -102,10 +104,19 @@ def fit_net(L, f, phi,
     X = phi[:, 1:L+1].to(device)
     y = torch.Tensor(f).to(device)
     
+    if quantile_transform is not None:
+        qt = QuantileTransformer(output_distribution=quantile_transform, n_quantiles=10)
+        train_val_indices = np.concatenate([train_idx, val_idx])
+        y_train_val = y[train_val_indices].to('cpu').numpy()
+        y_train_val = qt.fit_transform(y_train_val.reshape(-1, 1)).flatten()
+        y_train = torch.Tensor(y_train_val[:len(train_idx)]).to(device)
+        y_val = y_train_val[len(train_idx):]
+    else:
+        y_train = y[train_idx]
+        y_val = y[val_idx].to('cpu')
+    
     X_train = X[train_idx]
-    y_train = y[train_idx]
     X_val = X[val_idx]
-    y_val = y[val_idx].to('cpu')
     X_test = X[test_idx]
     y_test = y[test_idx].to('cpu')
     
@@ -113,7 +124,8 @@ def fit_net(L, f, phi,
         loss_func = nn.MSELoss()
     elif loss== 'bradley_terry':
         loss_func = bradley_terry_loss
-    early_stopper = EarlyStopper(patience=patience, min_delta=0)
+    early_stopper = EarlyStopper(patience=patience, min_delta=0)        
+    
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     if verbose:
         prog = tqdm(range(max_epochs))

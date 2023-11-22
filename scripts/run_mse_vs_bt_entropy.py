@@ -12,9 +12,9 @@ from sklearn.model_selection import train_test_split
 Script that runs the simulations shown in Fig. 2b
 """
 
-K = 1
-VERSION = "K=%i" % K 
-
+K = 3
+eps = 0.1
+VERSION = f"K={K}_eps={eps}"
 # parameters of simulation:
 L = 10
 q = 2
@@ -23,7 +23,8 @@ V = 'random'
 N = q**L
 num_train = 256
 num_val = int((num_train / 0.8) * 0.2)
-replicates = 50
+# replicates = 50
+replicates=10
 
 # nonlinearities
 gs = {
@@ -81,6 +82,8 @@ for g_name in gs.keys():
             
             entropy = simulation_utils.calc_entropy(betanorm_)
             
+            fnorm_ += np.random.randn(N)*eps
+            
             train_idx, test_idx = train_test_split(list(range(N)), train_size=num_train+num_val) 
             train_idx, val_idx = train_test_split(train_idx, train_size=num_train)
             test_idx = list(range(N)) # Test on everything
@@ -96,7 +99,7 @@ for g_name in gs.keys():
                                                       patience=patience, 
                                                       lr=mse_lr, 
                                                       verbose=verbose,
-                                                      device='cpu')
+                                                      device='cuda:1')
             
             add_to_results(g_name, alpha, entropy, 'mse', mse_results)
 
