@@ -96,7 +96,7 @@ for g_name in gs.keys():
                                                       patience=patience, 
                                                       lr=mse_lr, 
                                                       verbose=verbose,
-                                                      device='cpu')
+                                                      device='cuda')
             
             add_to_results(g_name, alpha, entropy, 'mse', mse_results)
 

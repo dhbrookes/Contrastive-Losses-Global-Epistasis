@@ -36,7 +36,7 @@ betanorm_ = phi.T@fnorm_
 
 
 ns = np.arange(25, 1025, 25)
-replicates = 200
+replicates = 20
 
 results = {
     'train_size': [],
@@ -62,7 +62,7 @@ batch_size = 64
 max_epochs = 2500
 verbose = True
 sig = 0
-DEVICE = 'cpu'
+DEVICE = 'cuda'
 
 np.save(f"../results/train_size_results/train_size_f_{VERSION}.npy", f)
 np.save(f"../results/train_size_results/train_size_fprime_{VERSION}.npy", fnorm_)
