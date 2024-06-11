@@ -6,11 +6,11 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.14.1
+#       jupytext_version: 1.14.4
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: dyno
 #     language: python
-#     name: python3
+#     name: dyno
 # ---
 
 # +
@@ -32,7 +32,7 @@ plt.rcParams['font.sans-serif'] = ['Arial']
 # # Complete Recovery (Fig 1)
 
 # +
-VERSION = 'TEST'
+VERSION = 'SUBMIT'
 
 L = 8
 q = 2
@@ -184,12 +184,16 @@ plt.show()
 # ## Load train size results
 
 # +
-VERSION = 'SUBMIT'
+K = 2
+alpha=10
+VERSION = f"K={K}_alpha={alpha}_baseline2"
+
+# VERSION = 'SUBMIT'
 df = pd.read_csv("results/train_size_results/train_size_results_%s.csv" % VERSION, index_col=0)
 
 bt_results = df.query("loss=='bradley_terry'").groupby("train_size").agg({"test_pearson":['mean', 'std'],
                                                                  "test_spearman": ['mean', 'std']})
-mse_results = df.query("loss=='mse'").groupby("train_size").agg({"test_pearson":['mean', 'std'],
+mse_results = df.query("loss=='mse_quant_uniform'").groupby("train_size").agg({"test_pearson":['mean', 'std'],
                                                                  "test_spearman": ['mean', 'std']})
 
 mse_pearsons = mse_results['test_pearson']
@@ -201,7 +205,8 @@ bt_spearmans = bt_results['test_spearman']
 # # Load entropy results
 
 # +
-VERSION = 'SUBMIT'
+# VERSION = f'SUBMIT'
+VERSION = f"K={K}_baseline"
 
 df = pd.read_csv("results/entropy_results/entropy_results_%s.csv" % VERSION, index_col=0)
 
@@ -211,7 +216,7 @@ df = pd.read_csv("results/entropy_results/entropy_results_%s.csv" % VERSION, ind
 # +
 L = 10
 q = 2
-K = 2
+K = 3
 V = 'random'
 N = q**L
 f, beta, phi, seqs = sparsity_utils.sample_gnk_fitness_function(L, q, K=K, V=V) 
@@ -260,7 +265,7 @@ for i, g in enumerate(df['nonlinearity'].unique()):
     lbl1=None
     lbl2 = None
     bt_data = df.query(f"nonlinearity=='{g}' and loss=='bradley_terry'")
-    mse_data = df.query(f"nonlinearity=='{g}' and loss=='mse'")
+    mse_data = df.query(f"nonlinearity=='{g}' and loss=='mse_quant_uniform'")
     
     ax.scatter(mse_data['entropy'], mse_data['test_spearman'], 
                c=mse_color, s=s, alpha=alpha, marker=markers[i],
@@ -290,6 +295,8 @@ legend_elements = [Patch(facecolor=bt_color, label='Bradley-Terry'),
                   ]
 ax.legend(handles=legend_elements, frameon=False, fontsize=8)
 
+
+# train size
 ax = axes[2]
 bt_color = colors[0]
 mse_color = colors[2]
@@ -356,7 +363,9 @@ legend_elements = [Patch(facecolor=bt_color, label='Bradley-Terry'),
                    
                   ]
 ax.legend(handles=legend_elements, frameon=False, fontsize=8)
-ax.set_ylim([0, 1.01])
+# ax.set_ylim([0.6, 1.01])
+# ax.set_xlim([0, 250])
+ax.set_xticks([0, 250, 500, 750, 1000])
 
 
 # Other stuff
@@ -432,4 +441,6 @@ for i, g in enumerate(["exponential", "sigmoid", "cubic", "arcsinh"]):
 plt.tight_layout()
     
 # -
-s
+
+
+
