@@ -3,7 +3,7 @@
 
 ## Overview
 
-`Contrastive-Losses-Global-Epistasis` contains Python sourcecode for running the simulations used in the main text and appendix of "Contrastive losses as generalized models of global epistasis" 
+`Contrastive-Losses-Global-Epistasis` contains Python sourcecode for running the simulations used in the main text and appendix of "Contrastive losses as generalized models of global epistasis" by David Brookes, Jakub Otwinowski and Sam Sinai.
 
 ## System Requirements
 
@@ -25,3 +25,10 @@ cd Contrastive-Losses-Global-Epistasis
 
 ```
 
+## Contents
+
+* `scripts/` contains self-contained Python scripts that run the simulations used in the paper
+    * `scripts/run_complete_recovery_main_text.py` runs the simulations whose results are shown in Figure 1.
+    * `scripts/run_mse_vs_bt_entropy.py` runs the simulations whose results are shown in Figure 2b.
+    * `scripts/run_mse_vs_bt_train_size.py` runs the simulations whose results are shown in Figure 2c.
+    *     
